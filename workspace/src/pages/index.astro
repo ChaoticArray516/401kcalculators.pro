@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Calc401kForm from '../components/Calc401kForm.astro';
+import YearlyTable from '../components/YearlyTable.astro';
+import { project } from '../engine/401k.mjs';
+import dates from '../data/pages/dates.json' with { type: 'json' };
+import sources from '../data/sources.json' with { type: 'json' };
+import irs from '../data/irs/2027.json' with { type: 'json' };
+
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+const title = '401k Calculator — Project Your Balance and Match';
+const description = 'Estimate your 401k balance year by year, including employer match and IRS 2027 limits. Free, no sign-up, nothing stored.';
+const canonicalPath = '/';
+const pageDates = dates[canonicalPath];
+const defaultInput = {
+  currentAge: 30,
+  retirementAge: 67,
+  currentBalance: 25000,
+  annualSalary: 80000,
+  employeeRate: 0.06,
+  salaryGrowth: 0.03,
+  returnRate: 0.07,
+  matchRate: 0.5,
+  matchCapRate: 0.06,
+};
+const result = project(defaultInput);
+if (!result.ok) throw new Error('Invalid default projection');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': 'https://401kcalculators.pro/#website',
+    url: 'https://401kcalculators.pro/',
+    name: '401k Calculators',
+    inLanguage: 'en-US',
+    publisher: { '@id': 'https://401kcalculators.pro/#organization' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': 'https://401kcalculators.pro/#organization',
+    name: '401k Calculators',
+    url: 'https://401kcalculators.pro/',
+    description: 'Free browser-based 401k and retirement calculators. Estimates only, not financial advice.',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://401kcalculators.pro/#webpage',
+    url: 'https://401kcalculators.pro/',
+    name: title,
+    description,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' },
+    about: { '@id': 'https://401kcalculators.pro/#app' },
+    dateModified: pageDates.modifiedOn,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    '@id': 'https://401kcalculators.pro/#app',
+    name: '401k Calculator',
+    url: 'https://401kcalculators.pro/',
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Any',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: 'Projects a 401k balance year by year with employer match and IRS 2027 contribution limits applied.',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' },
+  },
+];
+---
+<BaseLayout {title} {description} {canonicalPath} {jsonLd} modifiedOn={pageDates.modifiedOn}>
+  <div class="home-title">
+    <img class="home-title-icon" src="/favicon-64x64.png" alt="" aria-hidden="true" width="64" height="64" />
+    <h1>401k Calculator</h1>
+  </div>
+  <p class="lede">Project your 401k balance year by year, then check it against the IRS limit you will actually hit. The calculation runs in your browser, with no sign-up and no personal data sent anywhere.</p>
+
+  <Calc401kForm />
+
+  <p class="result-summary" data-projection-summary>Projected balance at age {defaultInput.retirementAge}: <strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(result.rows.at(-1).balance)}</strong>.</p>
+  <p class="assumption-note">IRS 2027 limits are held flat for illustration; later years are not official figures.</p>
+  <YearlyTable rows={result.rows} caption="First 3 years" preview />
+  <details class="full-table">
+    <summary>View the full year-by-year table</summary>
+    <YearlyTable rows={result.rows} caption="401k projection" />
+  </details>
+
+  <section>
+    <h2>How This 401k Calculator Works</h2>
+    <p>Enter nine figures and this calculator builds a year-by-year table from today's age through your retirement age. Salary grows at the rate you choose, while the balance earns the annual return you enter. Employee contributions and employer match are then added at the end of each year. This order is deliberate: the current year's contributions do not earn a return in that same year.</p>
+    <p>The starting balance is the only amount that compounds for the full first year. In later years, last year's ending balance becomes the new starting point. That makes every row easy to check by hand and keeps the projection consistent between the static example and a recalculation in your browser.</p>
+  </section>
+
+  <section>
+    <h2>Your 2027 Contribution Limits</h2>
+    <p>Contribution limits are applied at your age on December 31 of each year, using the IRS 2027 figures listed below. The base employee deferral is {money.format(irs.employeeDeferral)}. If you are 50 or older, the regular catch-up adds {money.format(irs.catchUp50)}. If you are 60 through 63, the higher SECURE 2.0 catch-up is {money.format(irs.catchUp60to63)} instead of the regular {money.format(irs.catchUp50)}; the two catch-ups are never added together.</p>
+    <p>When your requested contribution exceeds the applicable amount, the calculator uses the limit and marks the row. A request exactly equal to the limit is shown as <strong>At the limit</strong>, while a request above it is marked as capped. For years after 2027, the same figures are held flat only to make the illustration possible. They are not predictions of future IRS adjustments.</p>
+    <ul class="source-list">
+      {sources.map((source) => <li><a href={source.url}>{source.publisher}: {source.id === 'irs-2027-news' ? '2027 contribution limits news release' : 'Notice 2026-66'}</a> (checked {source.checkedOn})</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2>How Employer Match Is Calculated</h2>
+    <p>Your match is applied to the amount you actually contribute, capped at the share of salary you enter. For example, suppose your employer adds 50 cents for every eligible dollar, with up to 6% of salary eligible for matching. If you contribute 6% of a $100,000 salary, your own annual contribution is $6,000 and the employer adds $3,000 before the annual balance is calculated.</p>
+    <p>If an IRS limit reduces your actual contribution, the calculator does not keep applying match to the larger, imaginary amount you originally requested. This avoids overstating the employer's contribution. The model is an annual illustration, not a payroll-by-payroll simulation, and it does not assume that every plan uses the same match formula or true-up rule.</p>
+  </section>
+
+  <section>
+    <h2>What the Year-by-Year Table Shows</h2>
+    <p>Each row is one year: age, salary, your contribution, employer match, investment earnings and ending balance. The limit column tells you when the applicable IRS ceiling changed the amount you could contribute. On a narrow screen, the rows become cards with the field names repeated beside each value, so you do not lose track of which number is which.</p>
+    <p>The default example starts at age 30 with $25,000 and an $80,000 salary. It uses a 6% employee contribution, 3% salary growth, a 7% hypothetical return and a 50% match on up to 6% of salary. These are demonstration inputs, not recommended assumptions. Change one field at a time to see what moves the result, or reset to return to this example.</p>
+  </section>
+
+  <section>
+    <h2>Assumptions Behind These Numbers</h2>
+    <p>Contributions are added at the end of each year and the annual return is applied to the balance you started the year with. Salary growth is applied before each new year's contribution is calculated. Amounts are not rounded during the calculation; rounding happens only when values are formatted for display. A fixed annual return is a simplification used for comparison, not a claim that markets move smoothly.</p>
+    <p>You can read the full formula and a three-year worked example on our <a href="/methodology/">methodology and assumptions</a> page. For a second view that turns a balance into retirement income, use the <a href="/retirement-calculator/">retirement calculator</a>. Both tools keep their inputs in your browser and use the same IRS data file.</p>
+  </section>
+
+  <section>
+    <h2>What This Calculator Does Not Do</h2>
+    <p>It does not model taxes, penalties, vesting schedules or required minimum distributions. It does not distinguish traditional and Roth contributions, calculate Social Security benefits, or give you an individualized withdrawal plan. Employer plans can treat match, eligibility and true-up differently, so your plan document remains the source for your actual benefit.</p>
+    <p>Results are educational estimates, not predictions, promises or financial, tax, investment or legal advice. A projection can help you compare assumptions, but it cannot tell you which fund to buy, how much risk to take or whether your retirement is secure.</p>
+  </section>
+
+  <script>
+    import { bind401kForm } from '../ui/401k-form.mjs';
+    bind401kForm(document.querySelector('#calculator-401k'));
+  </script>
+</BaseLayout>

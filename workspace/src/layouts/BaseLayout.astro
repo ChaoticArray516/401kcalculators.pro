@@ -1,0 +1,31 @@
+---
+import SeoHead from '../components/SeoHead.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/global.css';
+
+const {
+  title,
+  description,
+  canonicalPath,
+  jsonLd = [],
+  modifiedOn,
+  ogType = 'website',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SeoHead {title} {description} {canonicalPath} {jsonLd} {ogType} iconPath="/favicon-32x32.png" />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to main content</a>
+    <SiteHeader />
+    <main id="content" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter modifiedOn={modifiedOn} />
+  </body>
+</html>

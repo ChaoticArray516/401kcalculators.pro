@@ -1,0 +1,22 @@
+{
+  "name": "retirement-calc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.23.4",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "gen:og": "node scripts/gen-og.mjs",
+    "check:fixtures": "node scripts/check-fixtures.mjs",
+    "build": "node scripts/gen-og.mjs && node scripts/check-fixtures.mjs && astro build && node scripts/gen-sitemap.mjs && node scripts/verify-batch3a.mjs",
+    "verify": "node scripts/check-fixtures.mjs && node scripts/verify-batch3a.mjs",
+    "preview": "node scripts/preview.mjs"
+  },
+  "devDependencies": {
+    "astro": "7.4.5",
+    "sharp": "0.35.5"
+  }
+}

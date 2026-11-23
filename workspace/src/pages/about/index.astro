@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import dates from '../../data/pages/dates.json' with { type: 'json' };
+const title = 'About This Site and How It Is Maintained';
+const description = 'Who runs this site, how each calculator is reviewed before publishing, when figures are updated, and how to report an error.';
+const canonicalPath = '/about/';
+const pageDates = dates[canonicalPath];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebPage', '@id': 'https://401kcalculators.pro/about/#webpage',
+    url: 'https://401kcalculators.pro/about/', name: title, description, inLanguage: 'en-US',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' }, dateModified: pageDates.modifiedOn,
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', '@id': 'https://401kcalculators.pro/about/#breadcrumb',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://401kcalculators.pro/' },
+      { '@type': 'ListItem', position: 2, name: 'About' },
+    ],
+  },
+];
+---
+<BaseLayout {title} {description} {canonicalPath} {jsonLd} modifiedOn={pageDates.modifiedOn}>
+  <h1>About</h1>
+  <p class="lede">401k Calculators is an independent educational project for comparing retirement assumptions in a browser. It is not a financial institution, an advisory service or an official government resource.</p>
+
+  <section>
+    <h2>What This Site Is</h2>
+    <p>This is an independent site offering free, browser-based 401k and retirement estimates; it is not affiliated with the IRS or any financial institution. The calculators use public contribution limits and plainly stated formulas to show how a balance changes under different assumptions.</p>
+    <p>The site does not accept accounts, sell investments, manage money or provide personalized recommendations. It does not ask for a Social Security number, an account number or a login. You can use the default example without typing anything at all.</p>
+  </section>
+
+  <section>
+    <h2>How Calculators Are Reviewed</h2>
+    <p>Each calculator is checked against a hand-worked example before publishing and whenever an IRS limit changes. The same fixed examples run against the calculation engine during the build, so a change that breaks an expected result stops the build rather than silently altering the page.</p>
+    <p>Reviews also cover the formula order, age boundaries, exactly-at-limit and over-limit behavior, invalid ages, zero contributions, and positive and negative returns. The <a href="/methodology/">Methodology and Assumptions</a> page records the calculation sequence that those checks are intended to enforce.</p>
+  </section>
+
+  <section>
+    <h2>When Figures Are Updated</h2>
+    <p>Contribution limits are reviewed each November, when the IRS publishes the following year's figures. A new annual data file is added only after an official source is identified. The affected pages, default examples and fixtures are then reviewed together.</p>
+    <p>Defaults and source links are checked quarterly. A page's Last updated date changes only when its content materially changes; rebuilding the site does not make the page look newer. If a later year's limit is unknown, the calculator says that the current figure is being held flat for illustration.</p>
+  </section>
+
+  <section>
+    <h2>Reporting an Error</h2>
+    <p>Error reports are assessed against the official source document, the published formula and a hand-worked example before any correction is made. A difference between two calculators can come from different assumptions rather than a software error, so the first step is to identify which convention is being used.</p>
+    <p>This page does not claim to offer a support service or a guaranteed response time. The operator's public correction channel is a launch requirement, not something invented for this page. Until a real channel is configured, no email address, form or social account is presented as though it were monitored.</p>
+  </section>
+
+  <section>
+    <h2>Independence and Advertising</h2>
+    <p>The first version loads no analytics, advertising or third-party scripts. The calculators run entirely in your browser, and their inputs are not sent to an application server. Standard hosting request logs may still be recorded by the hosting provider for security and abuse prevention.</p>
+    <p>Educational estimates are not financial, tax, investment or legal advice. Read the <a href="/terms/">Terms of Use</a> and <a href="/privacy/">Privacy Policy</a> for the limits of the site.</p>
+  </section>
+</BaseLayout>

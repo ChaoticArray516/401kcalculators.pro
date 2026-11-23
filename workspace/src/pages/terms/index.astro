@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import dates from '../../data/pages/dates.json' with { type: 'json' };
+const title = 'Terms of Use and Disclaimer';
+const description = 'This site provides educational estimates, not financial, tax or investment advice. Read what these calculators can and cannot tell you before relying on one.';
+const canonicalPath = '/terms/';
+const pageDates = dates[canonicalPath];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebPage', '@id': 'https://401kcalculators.pro/terms/#webpage',
+    url: 'https://401kcalculators.pro/terms/', name: title, description, inLanguage: 'en-US',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' }, dateModified: pageDates.modifiedOn,
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', '@id': 'https://401kcalculators.pro/terms/#breadcrumb',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://401kcalculators.pro/' },
+      { '@type': 'ListItem', position: 2, name: 'Terms of Use' },
+    ],
+  },
+];
+---
+<BaseLayout {title} {description} {canonicalPath} {jsonLd} modifiedOn={pageDates.modifiedOn}>
+  <h1>Terms of Use</h1>
+  <p class="lede">These terms describe the limits of the calculators and of the responsibility you take when choosing whether to rely on an estimate. By using the site, you acknowledge those limits.</p>
+
+  <section>
+    <h2>Educational Estimates Only</h2>
+    <p>Results are illustrative projections based on the inputs and assumptions you provide, not a prediction of your future balance. A constant annual return, fixed salary growth and inflation-adjusted withdrawals are simplifications. Real salaries, markets, expenses and plan rules do not follow a fixed annual script.</p>
+    <p>The default figures exist to demonstrate the formulas. They are not suggested contribution rates, investment allocations, retirement ages or withdrawal rates. Changing an input can produce a different result without making either result more suitable for you.</p>
+  </section>
+
+  <section>
+    <h2>Not Financial, Tax or Investment Advice</h2>
+    <p>Nothing here is individualized advice and no advisory relationship is created by using this site. The calculators do not evaluate your income needs, tax bracket, risk tolerance, debts, health, family circumstances or other assets.</p>
+    <p>Do not treat a result as a recommendation to buy or sell an investment, change a contribution, retire at a particular age or take a distribution. Decisions of that kind may require a qualified professional who can review your actual circumstances and current law.</p>
+  </section>
+
+  <section>
+    <h2>Official Rules and Plan Documents</h2>
+    <p>Official IRS sources are linked for the contribution limits used in the calculators. Those sources are the appropriate place to verify the rule itself. The site's conversion of a rule into a simplified annual model is an implementation choice, not an official interpretation.</p>
+    <p>Your employer's plan document controls eligibility, matching, vesting, loans, withdrawals and any true-up. If the site and your plan document describe a match differently, the plan document is the relevant source for your benefit.</p>
+  </section>
+
+  <section>
+    <h2>Accuracy and Availability</h2>
+    <p>The site is provided as is, with no warranty that results are free of error or that the site will be available without interruption. Although fixed examples are checked during the build, no test can cover every input, rule change, browser or personal situation.</p>
+    <p>Limits and other official figures may change after they are reviewed. Later years are held flat only for illustration and are not presented as official forecasts. You should verify important figures and assumptions before acting on them.</p>
+  </section>
+
+  <section>
+    <h2>Limitation of Liability</h2>
+    <p>To the extent permitted by law, the operator is not liable for decisions made in reliance on these estimates. You remain responsible for checking the formula, the input, the official source and the relevance of a scenario to your own circumstances.</p>
+    <p>The site does not guarantee a particular balance, income stream, tax outcome or retirement date. No output should be interpreted as a promise that money will last for a specified period.</p>
+  </section>
+
+  <section>
+    <h2>External Links</h2>
+    <p>Links to the IRS and other third parties are provided for verification and are governed by those sites' own terms. Their availability, content and security practices are outside this site's control. Following an external link does not make the third party responsible for this calculator.</p>
+  </section>
+
+  <section>
+    <h2>Governing Terms and Changes</h2>
+    <p>Continued use after an update means you accept the revised terms. Material changes are shown through this page's Last updated date. Review the current <a href="/privacy/">Privacy Policy</a> for information about calculator inputs and ordinary hosting logs.</p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import dates from '../data/pages/dates.json' with { type: 'json' };
+const title = 'Page Not Found';
+const description = 'The requested page does not exist. Return to one of the available calculators or information pages.';
+const canonicalPath = '/404.html';
+const pageDates = dates['/'];
+---
+<BaseLayout {title} {description} {canonicalPath} modifiedOn={pageDates.modifiedOn}>
+  <h1>Page Not Found</h1>
+  <p>The page you asked for does not exist. These pages do.</p>
+  <ul>
+    <li><a href="/">401k calculator</a></li>
+    <li><a href="/retirement-calculator/">retirement calculator</a></li>
+    <li><a href="/methodology/">methodology and assumptions</a></li>
+    <li><a href="/about/">about this site</a></li>
+  </ul>
+</BaseLayout>

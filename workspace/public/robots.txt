@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://401kcalculators.pro/sitemap.xml

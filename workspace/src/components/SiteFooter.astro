@@ -1,0 +1,12 @@
+---
+const { modifiedOn } = Astro.props;
+---
+<footer class="site-footer">
+  <p>Educational estimates only. Not financial, tax, investment, or legal advice. Not affiliated with the IRS or any financial institution.</p>
+  <nav aria-label="Legal and site information">
+    <a href="/about/">About</a>
+    <a href="/privacy/">Privacy Policy</a>
+    <a href="/terms/">Terms of Use</a>
+  </nav>
+  <p>Last updated: <time datetime={modifiedOn}>{modifiedOn}</time></p>
+</footer>

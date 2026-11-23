@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RetirementForm from '../../components/RetirementForm.astro';
+import WithdrawalTable from '../../components/WithdrawalTable.astro';
+import { calculateRetirement } from '../../engine/retirement.mjs';
+import dates from '../../data/pages/dates.json' with { type: 'json' };
+import sources from '../../data/sources.json' with { type: 'json' };
+
+const title = 'Retirement Calculator — Withdrawal and Savings';
+const description = 'Model retirement income from your 401k balance, yearly contributions and the withdrawal rate you choose. Every assumption is shown. Free, no sign-up.';
+const canonicalPath = '/retirement-calculator/';
+const pageDates = dates[canonicalPath];
+const defaultInput = {
+  currentAge: 60,
+  retirementAge: 65,
+  currentBalance: 500000,
+  annualContribution: 12000,
+  preRetirementReturn: 0.05,
+  lifeExpectancy: 90,
+  initialWithdrawalRate: 0.04,
+  postRetirementReturn: 0.05,
+  inflation: 0.025,
+  socialSecurity: '',
+};
+const result = calculateRetirement(defaultInput);
+if (!result.ok) throw new Error('Invalid default retirement projection');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://401kcalculators.pro/retirement-calculator/#webpage',
+    url: 'https://401kcalculators.pro/retirement-calculator/',
+    name: title,
+    description,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' },
+    about: { '@id': 'https://401kcalculators.pro/retirement-calculator/#app' },
+    dateModified: pageDates.modifiedOn,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': 'https://401kcalculators.pro/retirement-calculator/#breadcrumb',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://401kcalculators.pro/' },
+      { '@type': 'ListItem', position: 2, name: 'Retirement Calculator' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    '@id': 'https://401kcalculators.pro/retirement-calculator/#app',
+    name: 'Retirement Calculator',
+    url: 'https://401kcalculators.pro/retirement-calculator/',
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Any',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: 'Models accumulation to retirement and year-by-year withdrawals with every assumption disclosed.',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' },
+  },
+];
+---
+<BaseLayout {title} {description} {canonicalPath} {jsonLd} modifiedOn={pageDates.modifiedOn}>
+  <h1>Retirement Calculator</h1>
+  <p class="lede">Turn a balance into a year-by-year retirement income, with the withdrawal rate and return you set. First add contributions until retirement, then see how long the resulting balance may last.</p>
+
+  <RetirementForm />
+  <WithdrawalTable rows={result.rows} retirementBalance={result.retirementBalance} depletedAt={result.depletedAt} caption="First 3 years" preview showSummary />
+  <details class="full-table">
+    <summary>View the full year-by-year table</summary>
+    <WithdrawalTable rows={result.rows} retirementBalance={result.retirementBalance} depletedAt={result.depletedAt} caption="Withdrawal projection" />
+  </details>
+  <p class="assumption-note">IRS 2027 limits are held flat for illustration; later years are not official figures.</p>
+
+  <section>
+    <h2>How This Retirement Calculator Works</h2>
+    <p>It starts with your projected balance at retirement and withdraws a fixed share of it in the first year, then adjusts that amount for inflation. Before that, the accumulation stage grows your current balance and adds your annual employee contribution. The two stages are separate, so changing a contribution changes the balance you actually reach at retirement.</p>
+    <p>During accumulation, the current balance earns the pre-retirement return and the year's contribution is added at year end. During withdrawal, investment earnings are applied before that year's withdrawal is subtracted. No employer match is added in this model, and every rate remains an assumption you can inspect and change.</p>
+  </section>
+
+  <section>
+    <h2>Setting Your Withdrawal Rate</h2>
+    <p>The withdrawal rate is the share of your balance you take out in year one; a lower rate makes the balance last longer. A 4% rate on a $500,000 balance means a $20,000 first withdrawal. The rate is not applied again to the shrinking balance each year. Instead, the first dollar amount becomes the starting withdrawal and later amounts rise with inflation.</p>
+    <p>This is a simple scenario, not a rule that fits everyone. It does not change your withdrawal based on market losses, taxes or unexpected expenses. Try several rates and return assumptions rather than treating one result as a safe income promise.</p>
+  </section>
+
+  <section>
+    <h2>What Inflation Does to Your Withdrawals</h2>
+    <p>Each later year's withdrawal grows with the inflation rate you enter, so the same purchasing power is maintained. With 2.5% inflation, a $20,000 first withdrawal becomes $20,500 in the next year. The amount continues to compound even while the remaining balance changes.</p>
+    <p>That means inflation can deplete a balance sooner than a flat-dollar illustration suggests. Investment returns may offset part of the increase, but the model makes no promise about which side wins. Both figures are visible in the table so you can see the mechanism rather than just a final age.</p>
+  </section>
+
+  <section>
+    <h2>Reading the Depletion Age</h2>
+    <p>The table marks the first year your balance reaches zero; if it never does, the calculator says the balance lasts past your life expectancy. Ending balances cannot fall below zero. When the balance is exhausted, later years are not shown as though money were still available.</p>
+    <p>A depletion age is not a forecast of when you will run out of money. It is only the result of this particular set of returns, inflation, contributions and withdrawals. Taxes, fees, market sequences, healthcare costs and changes in spending can all move the real outcome.</p>
+  </section>
+
+  <section>
+    <h2>Social Security Is Optional and Separate</h2>
+    <p>If you enter an estimate, it is added to your withdrawals as separate income; this page does not calculate a Social Security benefit. Leave the field blank and no Social Security amount is included. Any figure you provide is your own estimate, not a value obtained from the Social Security Administration.</p>
+    <p>Keeping that amount separate helps you compare the withdrawal from savings with other possible retirement income. It does not mean the estimate is appropriate for your claiming age or work record. This page intentionally does not try to be a Social Security calculator.</p>
+  </section>
+
+  <section>
+    <h2>Assumptions and Limits</h2>
+    <p>Returns are applied once per year, withdrawals are taken at year end, and required minimum distributions are not modeled. Employee contributions during accumulation follow the same age-based 2027 limits used by our <a href="/">401k calculator</a>, with those limits held flat for illustration. No future IRS figure is presented as official.</p>
+    <p>Read <a href="/methodology/">how each assumption is set</a> for the formula order and a hand-worked example. Results are educational estimates, not individualized financial, tax, investment or legal advice. Your plan rules, tax situation and actual returns will differ from the simple model shown here.</p>
+    <p>The order of operations matters as much as the rates. Contributions made during accumulation do not earn a return in the year they are added. In the withdrawal stage, earnings are calculated before the withdrawal is subtracted. A calculator using monthly compounding or beginning-of-year withdrawals will not produce the same table, even with identical inputs.</p>
+  </section>
+
+  <section>
+    <h2>Sources for the Contribution Limits</h2>
+    <p>The contribution ceilings come from official IRS material checked on November 23, 2026. The withdrawal and return assumptions are not official projections. Use the links to verify the limits, then judge the scenario assumptions separately.</p>
+    <ul class="source-list">
+      {sources.map((source) => <li><a href={source.url}>{source.publisher}: {source.id === 'irs-2027-news' ? '2027 contribution limits news release' : 'Notice 2026-66'}</a> (checked {source.checkedOn})</li>)}
+    </ul>
+  </section>
+
+  <script>
+    import { bindRetirementForm } from '../../ui/retirement-form.mjs';
+    bindRetirementForm(document.querySelector('#retirement-calculator'));
+  </script>
+</BaseLayout>

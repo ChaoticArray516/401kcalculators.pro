@@ -1,0 +1,17 @@
+# Internal planning, research and scratch data
+/prompts/
+/test/
+/traffic/
+
+# Application dependencies and build output
+/workspace/node_modules/
+/workspace/dist/
+/workspace/.astro/
+/workspace/.env
+/workspace/.env.local
+/workspace/.env.*.local
+
+# Deployment secrets
+/deploy/cloudflare/cloudflare-auth.conf
+/deploy/cloudflare/.env
+/deploy/cloudflare/.env.*

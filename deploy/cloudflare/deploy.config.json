@@ -1,0 +1,78 @@
+{
+  "provider": "cloudflare-pages",
+  "deploymentMode": "direct-upload",
+  "projectName": "retirement-calc",
+  "productionBranch": "main",
+  "pagesDevUrl": "https://retirement-calc-bxq.pages.dev",
+  "lastDeploymentUrl": "https://9b5fabb5.retirement-calc-bxq.pages.dev",
+  "faviconPath": "/favicon-32x32.png",
+  "homepageIconPath": "/favicon-64x64.png",
+  "customDomain": "401kcalculators.pro",
+  "customDomainStatus": "active",
+  "wwwCustomDomain": "www.401kcalculators.pro",
+  "wwwCustomDomainStatus": "active",
+  "dynadotNameserversSaved": true,
+  "registryRdapNameservers": [
+    "imani.ns.cloudflare.com",
+    "conrad.ns.cloudflare.com"
+  ],
+  "dnsCheckNote": "Local nslookup/plain curl on this machine is intercepted by a DNS proxy pointing to a local Caddy (410). Use RDAP, DoH, or curl --resolve against the real Cloudflare IPs to verify.",
+  "pagesCustomDomainId": "4bc78c58-8efa-4f61-afac-e85806b4b829",
+  "pagesCustomDomainStatus": "active",
+  "wwwCustomDomainId": "ed50d8f9-7c1d-477d-a7c2-7ebb61ed0fc1",
+  "dnsRecords": [
+    {
+      "name": "401kcalculators.pro",
+      "type": "CNAME",
+      "content": "retirement-calc-bxq.pages.dev",
+      "proxied": true
+    },
+    {
+      "name": "www.401kcalculators.pro",
+      "type": "CNAME",
+      "content": "retirement-calc-bxq.pages.dev",
+      "proxied": true
+    }
+  ],
+  "httpsVerified": true,
+  "lastChecked": "2026-11-24",
+  "cloudflareNameservers": [
+    "conrad.ns.cloudflare.com",
+    "imani.ns.cloudflare.com"
+  ],
+  "dynadotPreviousNameservers": [
+    "ns1.dyna-ns.net",
+    "ns2.dyna-ns.net"
+  ],
+  "accountId": "c226e5607ca2ba37b6c3190ad07b3e18",
+  "workspaceDir": "workspace",
+  "buildCommand": "npm ci && npm run build",
+  "outputDir": "dist",
+  "framework": "astro",
+  "staticOutput": true,
+  "nodeVersion": "22.23.4",
+  "tokenEnvVars": [
+    "CLOUDFLARE_API_TOKEN",
+    "CLOUDFLARE_ACCOUNT_ID"
+  ],
+  "credentialsFile": "deploy/cloudflare/cloudflare-auth.conf",
+  "tokenPermission": "Account > Cloudflare Pages > Edit",
+  "verifyRoutes": [
+    "/",
+    "/retirement-calculator/",
+    "/methodology/",
+    "/about/",
+    "/privacy/",
+    "/terms/",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/og/og-default.png",
+    "/does-not-exist"
+  ],
+  "notes": [
+    "Direct Upload and Git integration are mutually exclusive for a Cloudflare Pages project.",
+    "Never commit .env.local, cloudflare-auth.conf or an API token.",
+    "Apex and www both serve the Pages project; a www-to-apex 301 redirect is optional and not configured.",
+    "GSC submission and further DNS changes require separate approval."
+  ]
+}

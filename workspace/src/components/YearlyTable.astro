@@ -1,0 +1,42 @@
+---
+const { rows, caption = '401k projection', preview = false } = Astro.props;
+const captionId = preview ? 'projection-preview-caption' : 'projection-table-caption';
+const visibleRows = preview ? rows.slice(0, 3) : rows;
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+function limitText(row) {
+  if (row.capped) return row.assumed ? 'Capped (2027 limits assumed)' : 'Capped at the 2027 limit';
+  if (row.limitReached) return 'At the limit';
+  return 'Within limit';
+}
+---
+<div class="table-wrapper" tabindex="0" role="region" aria-labelledby={captionId} data-projection-table data-projection-preview={preview}>
+  <table>
+    <caption id={captionId}>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Year</th>
+        <th scope="col">Age</th>
+        <th scope="col">Salary</th>
+        <th scope="col">Your contribution</th>
+        <th scope="col">Employer match</th>
+        <th scope="col">Investment earnings</th>
+        <th scope="col">Ending balance</th>
+        <th scope="col">Limit status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {visibleRows.map((row) => (
+        <tr>
+          <th scope="row">{row.year}</th>
+          <td data-label="Age">{row.age}</td>
+          <td data-label="Salary">{money.format(row.salary)}</td>
+          <td data-label="Your contribution">{money.format(row.employee)}</td>
+          <td data-label="Employer match">{money.format(row.match)}</td>
+          <td data-label="Investment earnings">{money.format(row.earnings)}</td>
+          <td data-label="Ending balance">{money.format(row.balance)}</td>
+          <td data-label="Limit status">{limitText(row)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

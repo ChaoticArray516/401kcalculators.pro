@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import dates from '../../data/pages/dates.json' with { type: 'json' };
+import sources from '../../data/sources.json' with { type: 'json' };
+import irs from '../../data/irs/2027.json' with { type: 'json' };
+import { methodology } from '../../data/pages/methodology.mjs';
+
+const title = 'Methodology and Assumptions';
+const description = 'Every formula this site uses, the default values behind it, and the IRS figure each calculator cites. Written so you can check the math yourself.';
+const canonicalPath = '/methodology/';
+const pageDates = dates[canonicalPath];
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://401kcalculators.pro/methodology/#webpage',
+    url: 'https://401kcalculators.pro/methodology/',
+    name: title,
+    description,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' },
+    dateModified: pageDates.modifiedOn,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': 'https://401kcalculators.pro/methodology/#breadcrumb',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://401kcalculators.pro/' },
+      { '@type': 'ListItem', position: 2, name: 'Methodology and Assumptions' },
+    ],
+  },
+];
+---
+<BaseLayout {title} {description} {canonicalPath} {jsonLd} modifiedOn={pageDates.modifiedOn}>
+  <h1>Methodology and Assumptions</h1>
+  <p class="lede">This page shows the order of every calculation, the values used by the default examples, and the official documents behind the limits. The purpose is to let you check the math rather than ask you to trust a black box.</p>
+
+  <section>
+    <h2>401k Projection Formula</h2>
+    <p>For each year the calculator sets your salary, applies the age-based IRS limit, computes your actual contribution, then adds employer match and investment earnings. The starting point is your current balance. Salary for the first projection year is the salary you enter; for later years it is the previous year's salary multiplied by one plus your salary growth rate.</p>
+    <p>Requested employee contributions equal salary multiplied by your contribution rate. Actual contributions are the smaller of that request and the age-based limit. Employer match uses the actual contribution and the salary share eligible for matching. Investment earnings are the starting balance multiplied by your annual return.</p>
+    <p>The ending balance is the starting balance plus investment earnings, actual employee contributions and employer match. Contributions are therefore treated as arriving at year end: they do not earn a return in the year they are added. The next year starts with this ending balance and repeats the same steps. No intermediate balance is rounded; only displayed values are formatted.</p>
+  </section>
+
+  <section>
+    <h2>Worked Example, Three Years</h2>
+    <p>Starting from a $10,000 balance at age 40 with a $100,000 salary, a 5% contribution, a 50% match capped at 6% of salary and a 10% return, the balance reaches $18,500 after year one. Salary growth is zero in this example so that each step can be checked without a spreadsheet.</p>
+    <p>Each year begins with a $5,000 employee contribution. The salary eligible for matching is $6,000, and the match on the actual $5,000 contribution is $2,500. The following table shows the full sequence. It is also an independent fixture: if the engine produces a different result, the build stops.</p>
+    <div class="table-wrapper" tabindex="0" role="region" aria-label="Hand-worked three-year example">
+      <table>
+        <caption>Hand-worked example</caption>
+        <thead><tr><th scope="col">Year</th><th scope="col">Employee</th><th scope="col">Match</th><th scope="col">Earnings</th><th scope="col">Ending balance</th></tr></thead>
+        <tbody>
+          {methodology.workedExample.years.map((row) => <tr><th scope="row">{row.year}</th><td data-label="Employee">{money.format(row.employee)}</td><td data-label="Match">{money.format(row.match)}</td><td data-label="Earnings">{money.format(row.earnings)}</td><td data-label="Ending balance">{money.format(row.balance)}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p>Year one is $10,000 × 10% + $5,000 + $2,500 = $18,500. Year two is $18,500 × 10% + $5,000 + $2,500 = $27,850. Year three is $27,850 × 10% + $5,000 + $2,500 = $38,135. The percentage applies to the starting balance, not to the new contributions.</p>
+  </section>
+
+  <section>
+    <h2>How the Age-Based Limit Is Applied</h2>
+    <p>The limit uses your age on December 31 of each year: {money.format(irs.employeeDeferral)} base, plus {money.format(irs.catchUp50)} from age 50, or plus {money.format(irs.catchUp60to63)} from age 60 through 63, never both. At 64, the regular 50+ catch-up applies again. If the request is above the limit, actual contributions stop at the limit; if it is exactly equal, the result is marked At the limit.</p>
+    <p>The engine also distinguishes a request that was capped from a result that merely reached the ceiling. This prevents an exact-limit example from being mislabeled as though it had exceeded the rules. Future years reuse the {irs.year} values only as an illustration, and that assumption is displayed beside the results.</p>
+  </section>
+
+  <section>
+    <h2>Retirement Withdrawal Formula</h2>
+    <p>The first withdrawal is the retirement balance times your withdrawal rate; each later withdrawal grows with inflation and is subtracted at year end. Before that stage, the calculator accumulates your current balance and annual employee contributions to retirement. This two-stage structure means changing an annual contribution changes the retirement balance rather than leaving it fixed.</p>
+    <p>During accumulation, each year's ending balance equals the starting balance multiplied by one plus the pre-retirement return, plus the annual contribution after the applicable limit. During retirement, earnings are calculated on the starting balance first. The withdrawal is then subtracted, with the final balance floored at zero. The first zero-balance year is reported as the depletion age.</p>
+    <p>For example, a 4% initial withdrawal rate on a $500,000 retirement balance produces a $20,000 first withdrawal. At 2.5% inflation, the next withdrawal is $20,500. The model does not recalculate 4% of each year's smaller balance, because it is illustrating inflation-adjusted spending rather than a fixed-percentage-of-current-balance rule.</p>
+  </section>
+
+  <section>
+    <h2>Default Values and Why They Were Chosen</h2>
+    <p>Defaults are round, conservative figures, not a recommendation for your situation. The 401k example starts at age 30 with a $25,000 balance, an $80,000 salary, 6% contributions, 3% salary growth, a 7% return and a 50% match on up to 6% of salary. The retirement example starts at age 60 with $500,000, $12,000 annual contributions and a 5% pre-retirement return.</p>
+    <p>The retirement withdrawal example uses a 4% initial withdrawal rate, a 5% return during retirement and 2.5% inflation. These values make the table easy to read and the formulas easy to test. They do not describe an expected market outcome, a safe withdrawal rate or a recommended retirement plan.</p>
+    <p>When comparing these examples with another calculator, check the convention before comparing the answer. Some tools apply growth to both the starting balance and new contributions; others treat contributions as arriving at the start or middle of the year. Some apply match to the requested contribution, while this site applies it to the actual amount after the limit. Those choices can produce different balances even when every input looks identical.</p>
+    <p>The best check is therefore not a single final number. Read one row, identify the starting balance, apply the return, and add the two contributions in the stated order. If that row agrees, repeat for the next row. A final balance that happens to agree without matching the intermediate steps is not enough to establish that two calculators share a methodology.</p>
+  </section>
+
+  <section>
+    <h2>Sources and Review Dates</h2>
+    <p>Each IRS figure links to its published source, with the date it was last checked. The official publication date and our checked date are not the same thing as this page's Last updated date. A source review only changes the page date when the page itself is materially revised.</p>
+    <ul class="source-list">
+      {sources.map((source) => <li><a href={source.url}>{source.publisher}: {source.id === 'irs-2027-news' ? 'IR-2026-136' : 'Notice 2026-66'}</a>, published {source.publishedOn}, checked {source.checkedOn}.</li>)}
+    </ul>
+    <p>Limit data is held in one annual data file rather than repeated in templates. When the IRS publishes a new year, that file and every affected page must be reviewed together. If no new official figure exists, later years remain labelled as assumptions.</p>
+    <p>A corrected figure also needs a corrected example. Changing an annual limit without reviewing the relevant fixture could leave the site internally consistent but wrong. For that reason, source updates, formula examples, page text and browser checks are one maintenance task rather than independent edits.</p>
+  </section>
+
+  <section>
+    <h2>What Is Not Modeled</h2>
+    <p>Taxes, early-withdrawal penalties, vesting, RMDs, and state rules are outside this model. The calculator does not separate traditional and Roth contributions, estimate Social Security benefits, apply plan-specific true-ups, or account for fees and changing market sequences. A withdrawal illustration does not establish that income will be available when you need it.</p>
+    <p>Numbers outside these boundaries should not be inferred from the table. A balance that lasts past the selected life expectancy does not include later expenses or a longer life. A contribution that fits the annual limit does not prove that a payroll department will process it on the schedule you expect. The model is deliberately narrow so that each visible step can be audited.</p>
+    <p>Use the <a href="/">401k calculator</a> to inspect accumulation and the <a href="/retirement-calculator/">retirement calculator</a> to inspect withdrawals. Both provide educational estimates, not individualized financial, tax, investment or legal advice.</p>
+  </section>
+</BaseLayout>

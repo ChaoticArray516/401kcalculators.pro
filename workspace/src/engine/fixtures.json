@@ -1,0 +1,86 @@
+[
+  {
+    "id": "projection-hand-example",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 43, "currentBalance": 10000, "annualSalary": 100000, "employeeRate": 0.05, "salaryGrowth": 0, "returnRate": 0.1, "matchRate": 0.5, "matchCapRate": 0.06 },
+    "expected": { "balances": [18500, 27850, 38135], "employees": [5000, 5000, 5000], "matches": [2500, 2500, 2500], "earnings": [1000, 1850, 2785] }
+  },
+  {
+    "id": "exactly-at-limit",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 41, "currentBalance": 0, "annualSalary": 510000, "employeeRate": 0.05, "salaryGrowth": 0, "returnRate": 0, "matchRate": 0, "matchCapRate": 0.06 },
+    "expected": { "balances": [25500], "capped": [false], "limitReached": [true] }
+  },
+  {
+    "id": "one-dollar-over-limit",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 41, "currentBalance": 0, "annualSalary": 510200, "employeeRate": 0.05, "salaryGrowth": 0, "returnRate": 0, "matchRate": 0, "matchCapRate": 0.06 },
+    "expected": { "balances": [25500], "capped": [true], "limitReached": [true] }
+  },
+  {
+    "id": "age-limit-matrix",
+    "kind": "limits",
+    "expected": [
+      { "age": 49, "limit": 25500 },
+      { "age": 50, "limit": 34000 },
+      { "age": 59, "limit": 34000 },
+      { "age": 60, "limit": 37250 },
+      { "age": 63, "limit": 37250 },
+      { "age": 64, "limit": 34000 }
+    ]
+  },
+  {
+    "id": "zero-match",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 41, "currentBalance": 0, "annualSalary": 100000, "employeeRate": 0.05, "salaryGrowth": 0, "returnRate": 0, "matchRate": 0, "matchCapRate": 0.06 },
+    "expected": { "matches": [0], "balances": [5000] }
+  },
+  {
+    "id": "full-match",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 41, "currentBalance": 0, "annualSalary": 100000, "employeeRate": 0.05, "salaryGrowth": 0, "returnRate": 0, "matchRate": 1, "matchCapRate": 0.06 },
+    "expected": { "matches": [5000], "balances": [10000] }
+  },
+  {
+    "id": "zero-return",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 41, "currentBalance": 10000, "annualSalary": 100000, "employeeRate": 0, "salaryGrowth": 0, "returnRate": 0, "matchRate": 0.5, "matchCapRate": 0.06 },
+    "expected": { "balances": [10000], "employees": [0], "matches": [0] }
+  },
+  {
+    "id": "negative-return",
+    "kind": "projection",
+    "input": { "currentAge": 40, "retirementAge": 41, "currentBalance": 10000, "annualSalary": 100000, "employeeRate": 0, "salaryGrowth": 0, "returnRate": -0.05, "matchRate": 0.5, "matchCapRate": 0.06 },
+    "expected": { "balances": [9500], "earnings": [-500] }
+  },
+  {
+    "id": "invalid-retirement-age",
+    "kind": "invalid-projection",
+    "input": { "currentAge": 65, "retirementAge": 65, "currentBalance": 10000, "annualSalary": 100000, "employeeRate": 0.05, "salaryGrowth": 0, "returnRate": 0.05, "matchRate": 0.5, "matchCapRate": 0.06 },
+    "expected": { "field": "retirementAge", "code": "after-current-age" }
+  },
+  {
+    "id": "retirement-accumulation-and-withdrawal",
+    "kind": "retirement",
+    "input": { "currentAge": 60, "retirementAge": 63, "currentBalance": 100000, "annualContribution": 10000, "preRetirementReturn": 0, "lifeExpectancy": 66, "initialWithdrawalRate": 0.04, "postRetirementReturn": 0, "inflation": 0, "socialSecurity": "" },
+    "expected": { "retirementBalance": 130000, "balances": [124800, 119600, 114400], "withdrawals": [5200, 5200, 5200], "depletedAt": null }
+  },
+  {
+    "id": "retirement-higher-contribution",
+    "kind": "retirement",
+    "input": { "currentAge": 60, "retirementAge": 63, "currentBalance": 100000, "annualContribution": 20000, "preRetirementReturn": 0, "lifeExpectancy": 66, "initialWithdrawalRate": 0.04, "postRetirementReturn": 0, "inflation": 0, "socialSecurity": "" },
+    "expected": { "retirementBalance": 160000 }
+  },
+  {
+    "id": "retirement-zero-withdrawal-positive-return",
+    "kind": "retirement",
+    "input": { "currentAge": 60, "retirementAge": 61, "currentBalance": 100000, "annualContribution": 0, "preRetirementReturn": 0, "lifeExpectancy": 64, "initialWithdrawalRate": 0, "postRetirementReturn": 0.05, "inflation": 0, "socialSecurity": "" },
+    "expected": { "retirementBalance": 100000, "balances": [105000, 110250, 115762.5], "depletedAt": null }
+  },
+  {
+    "id": "retirement-social-security",
+    "kind": "retirement",
+    "input": { "currentAge": 60, "retirementAge": 61, "currentBalance": 100000, "annualContribution": 0, "preRetirementReturn": 0, "lifeExpectancy": 62, "initialWithdrawalRate": 0.04, "postRetirementReturn": 0, "inflation": 0, "socialSecurity": 12000 },
+    "expected": { "socialSecurity": [12000] }
+  }
+]

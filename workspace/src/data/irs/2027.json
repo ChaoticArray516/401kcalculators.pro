@@ -1,0 +1,15 @@
+{
+  "year": 2027,
+  "employeeDeferral": 25500,
+  "catchUp50": 8500,
+  "catchUp60to63": 11750,
+  "iraLimit": 7500,
+  "iraCatchUp": 1100,
+  "section415c": 75000,
+  "rothIraPhaseOutSingle": [158000, 173000],
+  "rothIraPhaseOutMarried": [250000, 260000],
+  "rothCatchUpWageThreshold": 155000,
+  "source": "https://www.irs.gov/newsroom/401k-limit-increases-to-25500-for-2027-ira-limit-remains-7500",
+  "sourcePdf": "https://www.irs.gov/pub/irs-drop/n-26-66.pdf",
+  "checkedOn": "2026-11-23"
+}

@@ -1,0 +1,37 @@
+---
+const { rows, retirementBalance, depletedAt, caption = 'Withdrawal projection', preview = false, showSummary = false } = Astro.props;
+const captionId = preview ? 'withdrawal-preview-caption' : 'withdrawal-table-caption';
+const visibleRows = preview ? rows.slice(0, 3) : rows;
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+---
+{showSummary && (
+  <div class="result-summary" data-retirement-summary>
+    Balance at retirement: <strong>{money.format(retirementBalance)}</strong>.
+    <span class="result-status">{depletedAt === null ? 'The balance lasts past your life expectancy.' : `The balance is depleted at age ${depletedAt}.`}</span>
+  </div>
+)}
+<div class="table-wrapper" tabindex="0" role="region" aria-labelledby={captionId} data-withdrawal-table data-withdrawal-preview={preview}>
+  <table>
+    <caption id={captionId}>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Age</th>
+        <th scope="col">Withdrawal</th>
+        <th scope="col">Investment earnings</th>
+        <th scope="col">Social Security estimate</th>
+        <th scope="col">Ending balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {visibleRows.map((row) => (
+        <tr>
+          <th scope="row">{row.age}</th>
+          <td data-label="Withdrawal">{money.format(row.withdrawal)}</td>
+          <td data-label="Investment earnings">{money.format(row.earnings)}</td>
+          <td data-label="Social Security estimate">{row.socialSecurity === null ? 'Not included' : money.format(row.socialSecurity)}</td>
+          <td data-label="Ending balance">{money.format(row.balance)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

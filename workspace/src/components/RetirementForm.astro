@@ -1,0 +1,66 @@
+---
+const fields = [
+  ['currentAge', 'Current age', 60, 'Your age at the start of the accumulation period.', 18, 100, 1],
+  ['retirementAge', 'Retirement age', 65, 'Must be greater than your current age.', 19, 101, 1],
+  ['currentBalance', 'Current 401(k) balance ($)', 500000, 'The balance before additional contributions.', 0, 1000000000, 1],
+  ['annualContribution', 'Annual employee contribution ($)', 12000, 'Your yearly contribution before retirement.', 0, 1000000, 1],
+  ['preRetirementReturn', 'Return before retirement', 0.05, 'A hypothetical annual return before retirement.', -0.99, 1, 0.01],
+  ['lifeExpectancy', 'Life expectancy', 90, 'Must be greater than your retirement age.', 1, 120, 1],
+  ['initialWithdrawalRate', 'First-year withdrawal rate', 0.04, 'Enter 0.04 for 4% of the retirement balance.', 0, 0.2, 0.005],
+  ['postRetirementReturn', 'Return during retirement', 0.05, 'A hypothetical annual return during retirement.', -0.99, 1, 0.01],
+  ['inflation', 'Annual inflation rate', 0.025, 'Later withdrawals rise by this rate.', -0.99, 0.5, 0.005],
+  ['socialSecurity', 'Optional Social Security estimate ($)', '', 'Leave blank to exclude it. This site does not calculate benefits.', 0, 1000000, 1],
+];
+const groups = {
+  timeline: [fields[0], fields[1], fields[5]],
+  savings: fields.slice(2, 4),
+  assumptions: [fields[4], ...fields.slice(6)],
+};
+---
+<form id="retirement-calculator" class="calculator" method="post" action="about:blank" autocomplete="off" aria-labelledby="retirement-inputs-heading">
+  <h2 id="retirement-inputs-heading">Your Inputs</h2>
+  <fieldset>
+    <legend>Your timeline</legend>
+    <div class="form-grid">
+      {groups.timeline.map(([name, label, value, hint, min, max, step]) => (
+        <div class="field">
+          <label for={name}>{label}</label>
+          <span class="hint" id={`${name}-hint`}>{hint}</span>
+          <input id={name} name={name} type="number" value={value} min={min} max={max} step={step} inputmode="decimal" aria-describedby={`${name}-hint`} data-hint={`${name}-hint`} aria-invalid="false" required />
+          <span class="error-msg" id={`${name}-error`}></span>
+        </div>
+      ))}
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Savings and contributions</legend>
+    <div class="form-grid">
+      {groups.savings.map(([name, label, value, hint, min, max, step]) => (
+        <div class="field">
+          <label for={name}>{label}</label>
+          <span class="hint" id={`${name}-hint`}>{hint}</span>
+          <input id={name} name={name} type="number" value={value} min={min} max={max} step={step} inputmode="decimal" aria-describedby={`${name}-hint`} data-hint={`${name}-hint`} aria-invalid="false" required />
+          <span class="error-msg" id={`${name}-error`}></span>
+        </div>
+      ))}
+    </div>
+  </fieldset>
+  <details class="assumptions">
+    <summary>Withdrawal and return assumptions</summary>
+    <div class="form-grid">
+      {groups.assumptions.map(([name, label, value, hint, min, max, step]) => (
+        <div class="field">
+          <label for={name}>{label}</label>
+          <span class="hint" id={`${name}-hint`}>{hint}</span>
+          <input id={name} name={name} type="number" value={value} min={min} max={max} step={step} inputmode="decimal" aria-describedby={`${name}-hint`} data-hint={`${name}-hint`} aria-invalid="false" required={name !== 'socialSecurity'} />
+          <span class="error-msg" id={`${name}-error`}></span>
+        </div>
+      ))}
+    </div>
+  </details>
+  <div class="actions">
+    <button type="submit">Calculate</button>
+    <button class="secondary" type="reset">Reset to example</button>
+  </div>
+  <noscript>Entering your own numbers requires JavaScript. The table below is a default example.</noscript>
+</form>

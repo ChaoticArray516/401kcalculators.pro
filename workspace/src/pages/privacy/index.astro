@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import dates from '../../data/pages/dates.json' with { type: 'json' };
+const title = 'Privacy Policy';
+const description = 'What this site does and does not collect. Calculators run in your browser; we never ask for a Social Security number, account number or login.';
+const canonicalPath = '/privacy/';
+const pageDates = dates[canonicalPath];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebPage', '@id': 'https://401kcalculators.pro/privacy/#webpage',
+    url: 'https://401kcalculators.pro/privacy/', name: title, description, inLanguage: 'en-US',
+    isPartOf: { '@id': 'https://401kcalculators.pro/#website' }, dateModified: pageDates.modifiedOn,
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', '@id': 'https://401kcalculators.pro/privacy/#breadcrumb',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://401kcalculators.pro/' },
+      { '@type': 'ListItem', position: 2, name: 'Privacy Policy' },
+    ],
+  },
+];
+---
+<BaseLayout {title} {description} {canonicalPath} {jsonLd} modifiedOn={pageDates.modifiedOn}>
+  <h1>Privacy Policy</h1>
+  <p class="lede">This policy explains what happens to the numbers you enter and to ordinary website request data. It does not assume accounts, advertising profiles or cloud-saved calculations.</p>
+
+  <section>
+    <h2>What We Do Not Collect</h2>
+    <p>No Social Security number, no account number, no login, and no upload of anything you type into a calculator. The site does not ask for your name, email address, employer, plan administrator or investment holdings.</p>
+    <p>You can read the default example without entering personal information. Resetting a calculator restores that example in your browser rather than retrieving a saved profile from elsewhere.</p>
+  </section>
+
+  <section>
+    <h2>Where Calculations Happen</h2>
+    <p>Every calculation runs in your browser; the numbers you enter are never sent to an application server. The formula is included in the page's JavaScript and uses the annual contribution-limit data delivered with the static site.</p>
+    <p>The first version has no backend database, account system or cloud storage for calculator inputs. Closing or refreshing the page does not send your entries to a saved-scenario service. The default results are also present in the HTML, so they remain readable when JavaScript is disabled.</p>
+  </section>
+
+  <section>
+    <h2>Cookies and Third-Party Scripts</h2>
+    <p>The first version of this site loads no analytics, advertising or third-party scripts and sets no cookies of its own. It does not use a behavioral advertising identifier, a tracking pixel or a social-media widget.</p>
+    <p>If analytics or advertising is ever proposed, this policy and the loading behavior must be revised before that feature is enabled. A later feature will not be described as though it had always been covered by this version of the policy.</p>
+  </section>
+
+  <section>
+    <h2>Server Logs</h2>
+    <p>The hosting provider may record standard request logs such as IP address and user agent for security and abuse prevention. When you request a static page, the host must process the network request in order to return it. That is different from sending your calculator inputs to an application database.</p>
+    <p>Static hosting is used to deliver HTML, CSS, JavaScript and images. The provider's own documentation governs any infrastructure-level logs, retention and security controls. The calculator does not add a separate logging layer for your financial entries. No calculator value is placed in a query string, a saved scenario or a custom event payload.</p>
+  </section>
+
+  <section>
+    <h2>External Links</h2>
+    <p>Links to the IRS and other third parties are provided so you can verify a figure or rule. Opening one takes you to a different website with its own privacy practices and server logs. This policy covers only 401k Calculators.</p>
+  </section>
+
+  <section>
+    <h2>Changes to This Policy</h2>
+    <p>Material changes will be reflected in the Last updated date shown on this page. A new feature that changes what is collected or transmitted requires an updated explanation, not just a change to a script name. Read the current <a href="/terms/">Terms of Use</a> alongside this policy.</p>
+  </section>
+</BaseLayout>

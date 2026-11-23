@@ -1,0 +1,18 @@
+[
+  {
+    "id": "irs-2027-news",
+    "url": "https://www.irs.gov/newsroom/401k-limit-increases-to-25500-for-2027-ira-limit-remains-7500",
+    "publisher": "Internal Revenue Service",
+    "publishedOn": "2026-11-12",
+    "checkedOn": "2026-11-23",
+    "citedOn": ["/", "/retirement-calculator/", "/methodology/"]
+  },
+  {
+    "id": "irs-notice-2026-66",
+    "url": "https://www.irs.gov/pub/irs-drop/n-26-66.pdf",
+    "publisher": "Internal Revenue Service",
+    "publishedOn": "2026-11-12",
+    "checkedOn": "2026-11-23",
+    "citedOn": ["/", "/retirement-calculator/", "/methodology/"]
+  }
+]

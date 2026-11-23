@@ -1,0 +1,65 @@
+---
+const fields = [
+  ['currentAge', 'Current age', 30, 'Your age at the end of the first projection year.', 18, 100, 1],
+  ['retirementAge', 'Retirement age', 67, 'Must be greater than your current age.', 19, 101, 1],
+  ['currentBalance', 'Current 401(k) balance ($)', 25000, 'The balance you have today.', 0, 1000000000, 1],
+  ['annualSalary', 'Annual salary ($)', 80000, 'Your gross salary in the first projection year.', 1, 10000000, 1],
+  ['employeeRate', 'Employee contribution rate', 0.06, 'Enter 0.06 for 6%.', 0, 1, 0.01],
+  ['salaryGrowth', 'Annual salary growth rate', 0.03, 'Enter 0.03 for 3% yearly growth.', -0.5, 0.5, 0.01],
+  ['returnRate', 'Annual investment return', 0.07, 'A hypothetical average, not a guarantee.', -0.99, 1, 0.01],
+  ['matchRate', 'Employer match rate', 0.5, 'Enter 0.5 when the employer adds $0.50 per eligible $1.', 0, 5, 0.1],
+  ['matchCapRate', 'Match-eligible salary cap', 0.06, 'The share of salary eligible for matching; 0.06 means 6%.', 0, 1, 0.01],
+];
+const groups = {
+  situation: fields.slice(0, 3),
+  contributions: [fields[3], fields[4], fields[7], fields[8]],
+  assumptions: fields.slice(5, 7),
+};
+---
+<form id="calculator-401k" class="calculator" method="post" action="about:blank" autocomplete="off" aria-labelledby="inputs-heading">
+  <h2 id="inputs-heading">Your Inputs</h2>
+  <fieldset>
+    <legend>Your situation</legend>
+    <div class="form-grid">
+      {groups.situation.map(([name, label, value, hint, min, max, step]) => (
+        <div class="field">
+          <label for={name}>{label}</label>
+          <span class="hint" id={`${name}-hint`}>{hint}</span>
+          <input id={name} name={name} type="number" value={value} min={min} max={max} step={step} inputmode="decimal" aria-describedby={`${name}-hint`} data-hint={`${name}-hint`} aria-invalid="false" required />
+          <span class="error-msg" id={`${name}-error`}></span>
+        </div>
+      ))}
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Contributions and employer match</legend>
+    <div class="form-grid">
+      {groups.contributions.map(([name, label, value, hint, min, max, step]) => (
+        <div class="field">
+          <label for={name}>{label}</label>
+          <span class="hint" id={`${name}-hint`}>{hint}</span>
+          <input id={name} name={name} type="number" value={value} min={min} max={max} step={step} inputmode="decimal" aria-describedby={`${name}-hint`} data-hint={`${name}-hint`} aria-invalid="false" required />
+          <span class="error-msg" id={`${name}-error`}></span>
+        </div>
+      ))}
+    </div>
+  </fieldset>
+  <details class="assumptions">
+    <summary>Return and growth assumptions</summary>
+    <div class="form-grid">
+      {groups.assumptions.map(([name, label, value, hint, min, max, step]) => (
+        <div class="field">
+          <label for={name}>{label}</label>
+          <span class="hint" id={`${name}-hint`}>{hint}</span>
+          <input id={name} name={name} type="number" value={value} min={min} max={max} step={step} inputmode="decimal" aria-describedby={`${name}-hint`} data-hint={`${name}-hint`} aria-invalid="false" required />
+          <span class="error-msg" id={`${name}-error`}></span>
+        </div>
+      ))}
+    </div>
+  </details>
+  <div class="actions">
+    <button type="submit">Calculate</button>
+    <button class="secondary" type="reset">Reset to example</button>
+  </div>
+  <noscript>Entering your own numbers requires JavaScript. The table below is a default example.</noscript>
+</form>
